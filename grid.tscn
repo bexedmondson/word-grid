@@ -83,6 +83,9 @@ theme_override_constants/separation = 10
 [node name="Cell" parent="HFlowContainer/GridMarginContainer/GridAspectRatioContainer/Grid/VBoxContainer/Row" unique_id=674933640 instance=ExtResource("2_bghhw")]
 layout_mode = 2
 
+[node name="Tile" parent="HFlowContainer/GridMarginContainer/GridAspectRatioContainer/Grid/VBoxContainer/Row/Cell" unique_id=1042171115 instance=ExtResource("3_fqc2p")]
+layout_mode = 0
+
 [node name="Cell2" parent="HFlowContainer/GridMarginContainer/GridAspectRatioContainer/Grid/VBoxContainer/Row" unique_id=1589804460 instance=ExtResource("2_bghhw")]
 layout_mode = 2
 
@@ -188,7 +191,7 @@ theme_override_constants/v_separation = 15
 columns = 4
 script = ExtResource("3_bghhw")
 
-[node name="Tile" parent="HFlowContainer/TileDockPanel/Tiles" unique_id=1042171115 instance=ExtResource("3_fqc2p")]
+[node name="Tile" parent="HFlowContainer/TileDockPanel/Tiles" unique_id=723670457 instance=ExtResource("3_fqc2p")]
 layout_mode = 2
 
 [node name="Tile2" parent="HFlowContainer/TileDockPanel/Tiles" unique_id=1463121450 instance=ExtResource("3_fqc2p")]

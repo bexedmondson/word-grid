@@ -30,4 +30,4 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 func letter():
 	if (slotTile == null):
 		return "-"
-	return slotTile.letter()
+	return slotTile.letter().to_lower()

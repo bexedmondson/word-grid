@@ -6,18 +6,32 @@ extends Node
 @export var wordScene : InstancePlaceholder
 @export var score : Label
 
-var lineSlotIndexes = [[0, 1, 2, 3, 4], 
-[5, 6, 7, 8, 9], 
-[10, 11, 12, 13, 14], 
-[15, 16, 17, 18, 19], 
-[20, 21, 22, 23, 24], 
-[0, 5, 10, 15, 20], 
-[1, 6, 11, 16, 21], 
-[2, 7, 12, 17, 22], 
-[3, 8, 13, 18, 23], 
-[4, 9, 14, 19, 24], 
-[0, 6, 12, 18, 24], 
-[5, 8, 12, 16, 20]]
+var lineSlotIndexes = [
+	[0,  1,  2,  3,  4], 
+	[5,  6,  7,  8,  9], 
+	[10, 11, 12, 13, 14], 
+	[15, 16, 17, 18, 19], 
+	[20, 21, 22, 23, 24], 
+	
+	[0, 5, 10, 15, 20], 
+	[1, 6, 11, 16, 21], 
+	[2, 7, 12, 17, 22], 
+	[3, 8, 13, 18, 23], 
+	[4, 9, 14, 19, 24], 
+	
+	[0, 6, 12, 18, 24], 
+	[5, 8, 12, 16, 20],
+	
+	[1, 7, 13, 19],
+	[3, 7, 11, 15],
+	[5, 11, 17, 23],
+	[9, 13, 17, 21],
+	
+	[2, 6, 10],
+	[2, 8, 14],
+	[10, 16, 22],
+	[14, 18, 22]
+]
 
 var test_letter_set = ["s","p","a","n","s","m","n","r","a","t","a","u","i","o","o","r","n","l","p","p","t","r","a","p","s"]
 
@@ -35,7 +49,7 @@ func _ready() -> void:
 	
 	for slot in slots:
 		slot.tile_changed.connect(update)
-		
+	
 	var file = FileAccess.open("res://small.txt", FileAccess.READ)
 	while (file.get_position() <file.get_length()):
 		var line = file.get_line()
@@ -45,56 +59,71 @@ func _ready() -> void:
 func update(slot: DropSlot):
 	var words = []
 	for line in lineSlotIndexes:
+		print(str(line))
 		#if middle slot empty, no words possible in this line so can early exit this check
 		var c = slots[line[2]].letter()
 		if (c == "-"):
 			continue
 		var a = slots[line[0]].letter()
 		var b = slots[line[1]].letter()
+		
+		#check_chunk(a+b+c, words)
+		var chunk : String = a+b+c
+		print(chunk)
+		if (!chunk.contains("-")):
+			if (valid_words.has(chunk)):
+				words.append(chunk)
+				print("----yay that's a word!")
+			chunk = chunk.reverse()
+			if (valid_words.has(chunk)):
+				words.append(chunk)
+				print("----yay that's a word!")
+		
+		if (line.size() < 4):
+			continue
+		
 		var d = slots[line[3]].letter()
+		if (d == "-"):
+			continue
+		
+		chunk = b+c+d
+		print(chunk)
+		if (!chunk.contains("-") && valid_words.has(chunk)):
+			words.append(chunk)
+			print("----yay that's a word!")
+		
+		chunk = a+b+c+d
+		print(chunk)
+		if (!chunk.contains("-") && valid_words.has(chunk)):
+			words.append(chunk)
+			print("----yay that's a word!")
+		
+		if (line.size() < 5):
+			continue
+		
 		var e = slots[line[4]].letter()
+		if (e == "-"):
+			continue
 		
 		var lastChunk : String = c+d+e
 		print(lastChunk)
-		if (!lastChunk.contains("-") && valid_words.has(lastChunk.to_lower())):
+		if (!lastChunk.contains("-") && valid_words.has(lastChunk)):
 			words.append(lastChunk)
 			print("----yay that's a word!")
 		if (b == "-"):
 			continue
-			
-		var firstChunk : String = a+b+c
-		print(firstChunk)
-		if (!firstChunk.contains("-") && valid_words.has(firstChunk.to_lower())):
-			words.append(firstChunk)
-			print("----yay that's a word!")
-		if (d == "-"):
-			continue
-			
-		var middleChunk : String = b+c+d
-		print(middleChunk)
-		if (!middleChunk.contains("-") && valid_words.has(middleChunk.to_lower())):
-			words.append(middleChunk)
-			print("----yay that's a word!")
 		
 		var lastChunkLong : String = b+c+d+e
 		print(lastChunkLong)
-		if (!lastChunkLong.contains("-") && valid_words.has(lastChunkLong.to_lower())):
+		if (!lastChunkLong.contains("-") && valid_words.has(lastChunkLong)):
 			words.append(lastChunkLong)
 			print("----yay that's a word!")
 		if (a == "-"):
 			continue
-			
-		var firstChunkLong : String = a+b+c+d
-		print(firstChunkLong)
-		if (!firstChunkLong.contains("-") && valid_words.has(firstChunkLong.to_lower())):
-			words.append(firstChunkLong)
-			print("----yay that's a word!")
-		if (e == "-"):
-			continue
 		
 		var linestring: String = a+b+c+d+e
 		print(linestring)
-		if (valid_words.has(linestring.to_lower())):
+		if (valid_words.has(linestring)):
 			words.append(linestring)
 			print("----yay that's a word!")
 	
@@ -111,6 +140,18 @@ func update(slot: DropSlot):
 		total += wordInstanceMap[word].get_points()
 	
 	score.text = "SCORE: " + str(total)
+
+func check_chunk(chunk: String, words: Array):
+	print(chunk)
+	if (chunk.contains("-")):
+		return
+	if (valid_words.has(chunk)):
+		words.append(chunk)
+		print("----yay that's a word!")
+	chunk = chunk.reverse()
+	if (valid_words.has(chunk)):
+		words.append(chunk)
+		print("----yay that's a word!")
 
 func make_word(word: String):
 	if word in wordInstanceMap:

@@ -1,5 +1,6 @@
 extends Node
 
+@export var generator : DailyLetterSetGenerator
 @export var tileHolder : TileDock
 @export var slots : Array[DropSlot]
 @export var tiles : Array[DropTile]
@@ -40,10 +41,12 @@ var wordInstanceMap = {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	test_letter_set.shuffle()
+	generator.generate(25)
+	
+	generator.generated_set.shuffle()
 	var i = 0
 	for tile in tiles:
-		tile.set_letter(test_letter_set[i])
+		tile.set_letter(generator.generated_set[i])
 		i += 1
 		tileHolder.setup_tile(tile)
 	

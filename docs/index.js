@@ -533,7 +533,7 @@ const InternalConfig = function (initConfig) { // eslint-disable-line no-unused-
 			'printErr': this.onPrintError,
 			'thisProgram': this.executable,
 			'noExitRuntime': false,
-			'dynamicLibraries': [`${loadPath}.side.wasm.br`].concat(this.gdextensionLibs),
+			'dynamicLibraries': [`${loadPath}.side.wasm`].concat(this.gdextensionLibs),
 			'emscriptenPoolSize': this.emscriptenPoolSize,
 			'instantiateWasm': function (imports, onSuccess) {
 				function done(result) {
@@ -560,10 +560,10 @@ const InternalConfig = function (initConfig) { // eslint-disable-line no-unused-
 					return `${loadPath}.js`;
 				} else if (path in gdext) {
 					return path;
-				} else if (path.endsWith('.side.wasm.br')) {
-					return `${loadPath}.side.wasm.br`;
-				} else if (path.endsWith('.wasm.br')) {
-					return `${loadPath}.wasm.br`;
+				} else if (path.endsWith('.side.wasm')) {
+					return `${loadPath}.side.wasm`;
+				} else if (path.endsWith('.wasm')) {
+					return `${loadPath}.wasm`;
 				}
 				return path;
 			},
@@ -666,7 +666,7 @@ const Engine = (function () {
 	Engine.load = function (basePath, size) {
 		if (loadPromise == null) {
 			loadPath = basePath;
-			loadPromise = preloader.loadPromise(`${loadPath}.wasm.br`, size, true);
+			loadPromise = preloader.loadPromise(`${loadPath}.wasm`, size, true);
 			requestAnimationFrame(preloader.animateProgress);
 		}
 		return loadPromise;
@@ -706,7 +706,7 @@ const Engine = (function () {
 						initPromise = Promise.reject(new Error('A base path must be provided when calling `init` and the engine is not loaded.'));
 						return initPromise;
 					}
-					Engine.load(basePath, this.config.fileSizes[`${basePath}.wasm.br`]);
+					Engine.load(basePath, this.config.fileSizes[`${basePath}.wasm`]);
 				}
 				const me = this;
 				function doInit(promise) {

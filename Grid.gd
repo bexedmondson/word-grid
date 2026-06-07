@@ -62,6 +62,7 @@ func _ready() -> void:
 var dash = "-"
 
 func update(slot: DropSlot):
+	push_warning("grid - update from slot " + slot.name)
 	var words = {}
 	for line in lineSlotIndexes:
 		#print(str(line))
@@ -114,13 +115,21 @@ func update(slot: DropSlot):
 		chunk = a+b+c+d+e
 		check_chunk(chunk, [l0,l1,l2,l3,l4], words)
 	
+	#push_warning("grid - words: " + str(words))
+	#push_warning("grid - wordinstancemap: " + str(wordInstanceMap))
+	var wordInstancesToRemove = []
 	for wordInstance in wordInstanceMap:
+		#push_warning("grid - wordinstance for " + str(wordInstance) + " in words?: " + str(words.has(wordInstance)))
 		if !words.has(wordInstance):
 			wordInstanceMap[wordInstance].queue_free()
-			wordInstanceMap.erase(wordInstance)
+			wordInstancesToRemove.append(wordInstance)
+	
+	for wordInstanceToRemove in wordInstancesToRemove:
+		wordInstanceMap.erase(wordInstanceToRemove)
 	
 	for word in words:
 		make_word(word, words[word])
+	#push_warning("grid - wordinstancemap: " + str(wordInstanceMap))
 	
 	var total = 0
 	for word in wordInstanceMap:

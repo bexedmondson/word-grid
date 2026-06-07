@@ -2,6 +2,7 @@ class_name DropTile extends Control
 
 signal dragged_away(tile: DropTile)
 signal swapped(tileToAdd: DropTile, tileToRemove: DropTile)
+signal quick_move_to_dock(tile: DropTile)
 
 @export var letter_label: Label
 
@@ -23,3 +24,7 @@ func letter():
 func _notification(notification_type):
 	if (notification_type == NOTIFICATION_DRAG_END):
 		self.modulate = Color.WHITE
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.double_click:
+		quick_move_to_dock.emit(self)

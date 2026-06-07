@@ -5,13 +5,17 @@ signal tile_changed(slot: DropSlot)
 @export var circle: Control
 @export var container: Container
 
+@export var tileDock : TileDock
+
 var slotTile: DropTile
 
 func remove_tile(tile: DropTile) -> void:
+	#push_warning(self.name + " " + tile.name + " remove, current " + (slotTile.name if slotTile != null else "null"))
 	if (tile != slotTile):
 		push_error(self.name + " removing tile " + tile.name + " but current tile is " + slotTile.name)
 	slotTile.dragged_away.disconnect(dragged_away)
 	slotTile.swapped.disconnect(swapped_for)
+	slotTile.quick_move_to_dock.disconnect(quick_move_tile_to_dock)
 	slotTile = null
 	tile_changed.emit(self)
 
@@ -28,9 +32,16 @@ func add_tile(tile: DropTile) -> void:
 	#push_warning(self.name + " " + tile.name + " add, current " + (slotTile.name if slotTile != null else "null"))
 	tile.dragged_away.connect(dragged_away)
 	tile.swapped.connect(swapped_for)
+	tile.quick_move_to_dock.connect(quick_move_tile_to_dock)
 	tile.reparent(container)
 	slotTile = tile
 	tile_changed.emit(self)
+
+func quick_move_tile_to_dock(tile: DropTile) -> void:
+	#push_warning(self.name + " " + tile.name + " quick move")
+	var tile_to_move = tile
+	remove_tile(tile)
+	tileDock.add_tile(tile)
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	return true

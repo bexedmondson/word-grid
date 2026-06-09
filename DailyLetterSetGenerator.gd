@@ -5,6 +5,8 @@ class_name DailyLetterSetGenerator extends Node
 var data = {}
 var generated_set = []
 
+var daySeed : int
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass
@@ -15,7 +17,7 @@ func _process(delta: float) -> void:
 
 func generate(count: int):
 	var date = Time.get_date_dict_from_system(true)
-	var daySeed: int = Time.get_unix_time_from_datetime_dict(date)
+	daySeed = Time.get_unix_time_from_datetime_dict(date)
 	seed(daySeed)
 	
 	load_letter_distribution()

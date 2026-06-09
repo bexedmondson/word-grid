@@ -58,6 +58,70 @@ func _ready() -> void:
 		var line = file.get_line()
 		valid_words.append(line)
 	file.close()
+	
+	var set_count = {}
+	for c in generator.generated_set:
+		if c in set_count:
+			set_count[c] += 1
+		else:
+			set_count[c] = 1
+	
+	var possible_word_scores = {}
+	for word in valid_words:
+		var word_count = {}
+		for c in word:
+			if c in word_count:
+				word_count[c] += 1
+			else:
+				word_count[c] = 1
+		
+		var word_possible = true
+		for w in word_count:
+			if w not in set_count:
+				word_possible = false
+				break
+			if set_count[w] < word_count[w]:
+				word_possible = false
+				break
+		
+		if not word_possible:
+			continue
+		
+		if word.length() == 3:
+			possible_word_scores[word] = 1
+			continue
+		
+		possible_word_scores[word] = 0
+		var line_words = {}
+		
+		check_chunk(word[0]+word[1]+word[2], [0,1,2], line_words)
+		check_chunk(word[0]+word[1]+word[2]+word[3], [0,1,2,3], line_words)
+		check_chunk(word[1]+word[2]+word[3], [1,2,3], line_words)
+		if (word.length() == 4):
+			for l in line_words:
+				if l.length() == 3:
+					possible_word_scores[word] += 1
+				else:
+					possible_word_scores[word] += 2
+			continue
+		
+		check_chunk(word[1]+word[2]+word[3]+word[4], [1,2,3,4], line_words)
+		check_chunk(word[2]+word[3]+word[4], [2,3,4], line_words)
+		check_chunk(word[0]+word[1]+word[2]+word[3]+word[4], [0,1,2,3,4], line_words)
+		for l in line_words:
+			if l.length() == 3:
+				possible_word_scores[word] += 1
+			elif l.length() == 4:
+				possible_word_scores[word] += 2
+			else:
+				possible_word_scores[word] += 3
+	print(possible_word_scores)
+	print(possible_word_scores.size())
+	var total = 0
+	for p in possible_word_scores:
+		total += possible_word_scores[p]
+	print(str(total))
+		
 
 var dash = "-"
 
@@ -65,55 +129,7 @@ func update(slot: DropSlot):
 	push_warning("grid - update from slot " + slot.name)
 	var words = {}
 	for line in lineSlotIndexes:
-		#print(str(line))
-		var l2 = line[2]
-		#if middle slot empty, no words possible in this line so can early exit this check
-		var c = slots[l2].letter()
-		if (c == dash):
-			continue
-			
-		var l0 = line[0]
-		var a = slots[l0].letter()
-		var l1 = line[1]
-		var b = slots[l1].letter()
-		
-		var chunk : String = a+b+c
-		check_chunk(chunk, [l0,l1,l2], words)
-		
-		if (line.size() < 4):
-			continue
-		
-		var l3 = line[3]
-		var d = slots[l3].letter()
-		if (d == dash):
-			continue
-		
-		chunk = b+c+d
-		check_chunk(chunk, [l1,l2,l3], words)
-		
-		chunk = a+b+c+d
-		check_chunk(chunk, [l0,l1,l2,l3], words)
-		
-		if (line.size() < 5):
-			continue
-		
-		var l4 = line[4]
-		var e = slots[l4].letter()
-		if (e == dash):
-			continue
-		
-		chunk = c+d+e
-		check_chunk(chunk, [l2,l3,l4], words)
-		if (b == dash):
-			continue
-		
-		chunk = b+c+d+e
-		check_chunk(chunk, [l1,l2,l3,l4], words)
-		if (a == dash):
-			continue
-		
-		chunk = a+b+c+d+e
-		check_chunk(chunk, [l0,l1,l2,l3,l4], words)
+		add_line_words(line, words)
 	
 	#push_warning("grid - words: " + str(words))
 	#push_warning("grid - wordinstancemap: " + str(wordInstanceMap))
@@ -136,6 +152,57 @@ func update(slot: DropSlot):
 		total += wordInstanceMap[word].get_points()
 	
 	score.text = "SCORE: " + str(total)
+
+func add_line_words(line: Array, words: Dictionary):
+	#print(str(line))
+	var l2 = line[2]
+	#if middle slot empty, no words possible in this line so can early exit this check
+	var c = slots[l2].letter()
+	if (c == dash):
+		return
+		
+	var l0 = line[0]
+	var a = slots[l0].letter()
+	var l1 = line[1]
+	var b = slots[l1].letter()
+	
+	var chunk : String = a+b+c
+	check_chunk(chunk, [l0,l1,l2], words)
+	
+	if (line.size() < 4):
+		return
+	
+	var l3 = line[3]
+	var d = slots[l3].letter()
+	if (d == dash):
+		return
+	
+	chunk = b+c+d
+	check_chunk(chunk, [l1,l2,l3], words)
+	
+	chunk = a+b+c+d
+	check_chunk(chunk, [l0,l1,l2,l3], words)
+	
+	if (line.size() < 5):
+		return
+	
+	var l4 = line[4]
+	var e = slots[l4].letter()
+	if (e == dash):
+		return
+	
+	chunk = c+d+e
+	check_chunk(chunk, [l2,l3,l4], words)
+	if (b == dash):
+		return
+	
+	chunk = b+c+d+e
+	check_chunk(chunk, [l1,l2,l3,l4], words)
+	if (a == dash):
+		return
+	
+	chunk = a+b+c+d+e
+	check_chunk(chunk, [l0,l1,l2,l3,l4], words)
 
 func check_chunk(chunk: String, indexes: Array[int], words: Dictionary):
 	#print(chunk)

@@ -62,7 +62,7 @@ func _ready() -> void:
 var dash = "-"
 
 func update(slot: DropSlot):
-	push_warning("grid - update from slot " + slot.name)
+	#push_warning("grid - update from slot " + slot.name)
 	var words = {}
 	for line in lineSlotIndexes:
 		#print(str(line))

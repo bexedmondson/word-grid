@@ -6,6 +6,13 @@ signal quick_move_to_dock(tile: DropTile)
 
 @export var letter_label: Label
 
+const DOUBLETAPDELAY = .25
+var doubleTapTimeout = 0.0
+
+func _process(delta: float) -> void:
+	if doubleTapTimeout > 0:
+		doubleTapTimeout -= delta
+
 func get_preview() -> Control:
 	var dupe = letter_label.duplicate()
 	self.modulate = Color.TRANSPARENT
@@ -18,7 +25,7 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 func set_letter(letter: String):
 	letter_label.text = letter.to_upper()
 
-func letter():
+func get_letter():
 	return letter_label.text
 	
 func _notification(notification_type):
@@ -26,6 +33,11 @@ func _notification(notification_type):
 		self.modulate = Color.WHITE
 
 func _gui_input(event: InputEvent) -> void:
-	print(str(event) + " " + str(event.double_click))
-	if event is InputEventMouseButton and event.double_click:
+	if event is InputEventScreenTouch:
+		if doubleTapTimeout > 0:
+			quick_move_to_dock.emit(self)
+			doubleTapTimeout = 0.0
+		else:
+			doubleTapTimeout = DOUBLETAPDELAY
+	elif event is InputEventMouseButton and event.double_click:
 		quick_move_to_dock.emit(self)

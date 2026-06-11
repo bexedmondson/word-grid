@@ -74,7 +74,7 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 func letter():
 	if (slotTile == null):
 		return "-"
-	return slotTile.letter().to_lower()
+	return slotTile.get_letter().to_lower()
 
 var tween: Tween
 func highlight():

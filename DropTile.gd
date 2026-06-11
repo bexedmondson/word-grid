@@ -26,5 +26,6 @@ func _notification(notification_type):
 		self.modulate = Color.WHITE
 
 func _gui_input(event: InputEvent) -> void:
+	print(str(event) + " " + str(event.double_click))
 	if event is InputEventMouseButton and event.double_click:
 		quick_move_to_dock.emit(self)

@@ -15,6 +15,8 @@ func _process(delta: float) -> void:
 
 func generate(count: int):
 	var date = Time.get_date_dict_from_system(true)
+	if (date["day"] == 13):
+		date["day"] = 12
 	var daySeed: int = Time.get_unix_time_from_datetime_dict(date)
 	seed(daySeed)
 	
